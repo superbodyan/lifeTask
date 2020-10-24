@@ -24,7 +24,8 @@ class CAjaxCity
                 echo self::deleteCity($params['CITY_ID']);
                 break;
             case "add":
-                echo self::addCity($params['CITY_NAME']);
+                echo self::addCity($params['CITY_NAME'] == "" ? null : $params['CITY_NAME']);
+                //print_r (json_encode($_POST['formData']));
                 break;
         }
     }
@@ -37,7 +38,7 @@ class CAjaxCity
      */
     private static function addCity($cityName = null)
     {
-        if (is_null($cityName))
+        if (is_null($cityName) || $cityName === "" || $cityName === "undefined")
             return json_encode("NO INPUT DATA");
 
         $el = new CIBlockElement;

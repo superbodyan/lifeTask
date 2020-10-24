@@ -13,16 +13,50 @@ class LifeMebelCitiesList extends CBitrixComponent
      * в массиве будет храниться список городов
      */
     private $arCities = [];
+    /**
+     * @var string
+     */
+    private $navs = "";
+    /**
+     * @var array
+     */
+    private $arNavParams = [
+        "nPageSize" => "50",
+        'bShowAll' => true
+    ];
+    /**
+     * @var
+     */
+    private $arNavigation;
+
 
     /**
      * @return mixed|void|null
      */
     public function executeComponent()
     {
-        if ($this->startResultCache()) {
+        if ($this->startResultCache(false, $this->getArNav())) {
             $this->arResult['ITEMS'] = $this->getCities();
+            $this->arResult['NAVS'] = $this->navs;
             $this->includeComponentTemplate();
         }
+    }
+
+    /**
+     * Метод для формаирования постраничной навигации и кеша
+     */
+    private function setArNav()
+    {
+        $this->arNavigation = CDBResult::GetNavParams($this->arNavParams);
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getArNav()
+    {
+        $this->setArNav();
+        return $this->arNavigation;
     }
 
     /**
@@ -38,17 +72,34 @@ class LifeMebelCitiesList extends CBitrixComponent
         $arFilter = ["IBLOCK_ID" => 1];
 
 
-        $arCities = CIBlockElement::GetList(array(), $arFilter, false, array(), $arSelect);
+        $arCities = CIBlockElement::GetList(array(), $arFilter, false, $this->arNavParams, $arSelect);
         if (!$arCities)
             $this->abortResultCache();
+
+        $this->addNavs($arCities);
 
         while ($arCity = $arCities->GetNextElement()) {
             $arFields = $arCity->GetFields();
             $arFields['CACHE_TEST'] = Date("Y-m-d:h-m-s");
-            $arResult[] = $arFields;
+            $this->arCities[] = $arFields;
         }
-        $this->arCities = $arResult;
 
+
+    }
+
+    /**
+     * @param $arCities
+     * подключаем компонент вывода pagenavigation
+     */
+    private function addNavs($arCities)
+    {
+
+        $navString = $arCities->GetPageNavString(
+            'Элементы', // поясняющий текст
+            'round',   // имя шаблона
+            true       // показывать всегда?
+        );
+        $this->navs = $navString;
     }
 
     /**

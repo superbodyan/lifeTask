@@ -38,6 +38,8 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
     </tbody>
 </table>
 
+<?php echo $arResult['NAVS'] // покащываем постраничную навигацию?>
+
 
 <script>
 
@@ -80,7 +82,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
                 function (data) {
                     let response = JSON.parse(data); // парсим ответ от сервера
 
-                    if (response.length != 0) { // проверяем, пришел массив или сообщение об ошибке
+                    if (response['ID'] > 1) { // проверяем, пришел массив или сообщение об ошибке
                         alert("Элемент успешно добавлен"); // выводим сообщение пользовтелю
                         // добавляем в таблицу новую запись
                         $("#cityTable").append('<tr><th scope="row">' + response['ID'] + '</th><td>' + response['NAME'] + '</td><td>' + response['CODE'] + '</td><td>' + response['CACHE_TEST'] + '</td><td><button data-city-id="' + response['ID'] + '" class="btn btn-danger delete-city">Удалить</button></td>');
