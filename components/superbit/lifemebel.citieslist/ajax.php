@@ -25,7 +25,6 @@ class CAjaxCity
                 break;
             case "add":
                 echo self::addCity($params['CITY_NAME'] == "" ? null : $params['CITY_NAME']);
-                //print_r (json_encode($_POST['formData']));
                 break;
         }
     }
