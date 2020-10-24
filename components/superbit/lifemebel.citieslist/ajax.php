@@ -7,8 +7,16 @@ Loader::includeModule("iblock");
 
 CAjaxCity::AjaxController(['AJAX_TASK' => $_POST['ajaxTask'], "CITY_ID" => $_POST['cityId'], "CITY_NAME" => $_POST['formData']['cityName']]);
 
+/**
+ * Class CAjaxCity
+ * Класс для работы с AJAX
+ */
 class CAjaxCity
 {
+    /**
+     * @param $params
+     * берем значение $_POST['ajaxTask] и определяем вызываем необходимую функцию
+     */
     public static function AjaxController($params)
     {
         switch ($params['AJAX_TASK']) {
@@ -21,6 +29,12 @@ class CAjaxCity
         }
     }
 
+    /**
+     * @param null $cityName
+     * @return false|string
+     * добавляем новый город
+     * у каждого города есть символьный код, который не может повторяться.
+     */
     private static function addCity($cityName = null)
     {
         if (is_null($cityName))
@@ -41,6 +55,11 @@ class CAjaxCity
             return json_encode(strip_tags($el->LAST_ERROR));
     }
 
+    /**
+     * @param null $cityId
+     * @return false|string
+     * удаляем город из инфоблока. Так как метод Delete возвращает true даже при услвоии, что элемента не существует, делаем проверку методом checkCity(cityId)
+     */
     private static function deleteCity($cityId = null)
     {
         if (is_null($cityId))
@@ -55,6 +74,11 @@ class CAjaxCity
 
     }
 
+    /**
+     * @param $cityId
+     * @return bool
+     * находим город с ID = cityId
+     */
     private static function checkIdCity($cityId)
     {
         $result = CIBlockElement::GetList([], ["IBLOCK_ID" => 1, "ID" => $cityId], false, [], ["ID"]);

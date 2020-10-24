@@ -10,7 +10,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
     <label>
         <input class="form-control" name="cityName" placeholder="Название города" type="text">
     </label>
-    <button id="addCityBtn" type="submit" class="btn btn-success add-city">Добавить город</button>
+    <button type="submit" class="btn btn-success add-city">Добавить город</button>
 </form>
 
 <table class="table">
@@ -41,48 +41,51 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 <script>
 
-    $(".table").on("click", ".delete-city", function () {
+    $(".table").on("click", ".delete-city", function () { // вешаем событие onClick на кнопку удаления города.
         let requestData = {
-            "cityId": $(this).attr("data-city-id"),
-            "ajaxTask": "del"
+            "cityId": $(this).attr("data-city-id"), // получаем id удаляемого города
+            "ajaxTask": "del" // передаем задание для Ajax
         };
-        let deleteItem = this.parentElement.parentElement;
+        let deleteItem = this.parentElement.parentElement; // получаем элемент tr для удаления строки на frontend'e
+        // используем BX.Ajax для общения с сервером
         BX.ready(function () {
             BX.ajax.post(
-                '<?= $componentPath . "/ajax.php"?>',
-                requestData,
+                '<?= $componentPath . "/ajax.php"?>', // получем путь к Ajax файлу
+                requestData, // передаем массив значений серверу
                 function (data) {
-                    let response = JSON.parse(data);
-                    $(deleteItem).remove();
-                    alert(response);
+                    let response = JSON.parse(data); // парсим ответ от сервера
+                    $(deleteItem).remove(); // удаляем элемент из frontend'a
+                    alert(response); // выводим сообщение пользователю
                 }
             );
         });
     })
 
-    $("#addCityBtn").on("click", function (e) {
-        e.preventDefault();
-        let formData = $("#addCityForm").serializeArray();
+    $(".add-city").on("click", function (e) { // вешаем событие на кнопку добавления города
+        e.preventDefault(); // отменяем дефолтный submit
+        let formData = $("#addCityForm").serializeArray(); // получаем значения из формы
         let arDormData = [];
         $.each(formData, function () {
-            arDormData[this.name] = this.value;
+            arDormData[this.name] = this.value; // форматируем значение формы в нормальный вид
         });
         let requestData = {
-            "formData": arDormData,
-            "ajaxTask": "add"
+            "formData": arDormData, // передаем название города
+            "ajaxTask": "add" // передаем задание для Ajax
         };
+        // используем BX.Ajax для общения с сервером
         BX.ready(function () {
             BX.ajax.post(
-                '<?= $componentPath . "/ajax.php"?>',
-                requestData,
+                '<?= $componentPath . "/ajax.php"?>', // получем путь к Ajax файлу
+                requestData, // передаем массив значений серверу
                 function (data) {
-                    let response = JSON.parse(data);
+                    let response = JSON.parse(data); // парсим ответ от сервера
 
-                    if (response.length != 0) {
-                        console.log("Элемент успешно добавлен");
+                    if (response.length != 0) { // проверяем, пришел массив или сообщение об ошибке
+                        alert("Элемент успешно добавлен"); // выводим сообщение пользовтелю
+                        // добавляем в таблицу новую запись
                         $("#cityTable").append('<tr><th scope="row">' + response['ID'] + '</th><td>' + response['NAME'] + '</td><td>' + response['CODE'] + '</td><td>' + response['CACHE_TEST'] + '</td><td><button data-city-id="' + response['ID'] + '" class="btn btn-danger delete-city">Удалить</button></td>');
                     } else {
-                        console.log(response);
+                        alert(response); // выводим сообщение пользовтелю
                     }
                 }
             )
