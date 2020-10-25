@@ -31,6 +31,17 @@ class LifeMebelCitiesList extends CBitrixComponent
 
 
     /**
+     * @param $arParams
+     * @return array|void
+     * проверяем, если указано, сколько показывать элементов, то меняем параметр, иначе остается 50 по умолчанию
+     */
+    public function onPrepareComponentParams($arParams)
+    {
+        if ($arParams['ELEMENTS_ON_PAGE'])
+            $this->arNavParams['nPageSize'] = $arParams['ELEMENTS_ON_PAGE'];
+    }
+
+    /**
      * @return mixed|void|null
      */
     public function executeComponent()
